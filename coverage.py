@@ -27,6 +27,7 @@ next_obs_diff_ = []
 action_ = []
 
 reward_ = []
+reward_step_ = []
 reward_viper_ = []
 reward_diff_ = []
 reward_diff_next_ = []
@@ -40,6 +41,8 @@ for i, file_path in enumerate(files):
         data = pickle.load(file)
         
     length = len(data["observations"])
+    
+    step_rewards = np.cumsum(np.array(data['skills'])).tolist()
     
     for i in range(length): # 0 ~ T-1 (t=1~T)
         frame = np.transpose(data["observations"][i]["color_image2"], (1, 2, 0))
@@ -59,6 +62,7 @@ for i, file_path in enumerate(files):
         action_.append(data['actions'][i])
         
         reward_.append(data['rewards'][i])
+        reward_step_.append(step_rewards[i])
         reward_viper_.append(data['viper_reward_16'][i])
         reward_diff_.append(data['diffusion_reward_16'][i])
         reward_diff_next_.append(data['diffusion_reward_16'][min(i + 1, length - 1)])
@@ -81,6 +85,7 @@ coverage = {
     'action': action_,
     
     'reward': reward_,
+    'reward_step': reward_step_,
     'reward_viper': reward_viper_,
     'reward_diff': reward_diff_,
     'reward_diff_next': reward_diff_next_,
